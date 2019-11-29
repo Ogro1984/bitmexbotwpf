@@ -7,6 +7,8 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
     <Grid>
-        
+        <Button x:Name="GetCandelstickData" Content="GetCandelstickData" HorizontalAlignment="Left" Margin="195.2,98,0,0" VerticalAlignment="Top" Width="75" Click="GetCandelstickData_Click"/>
+        <TextBox x:Name="texbox1" HorizontalAlignment="Left" Height="122" Margin="148.8,233.2,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="263.4"/>
+
     </Grid>
 </Window>

@@ -12,6 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using BitmexbotWPF.Helpers;
 
 namespace BitmexbotWPF
 {
@@ -20,9 +21,20 @@ namespace BitmexbotWPF
     /// </summary>
     public partial class MainWindow : Window
     {
+        OrderHandler orderhandler = new OrderHandler();
+        string order;
+  
         public MainWindow()
         {
             InitializeComponent();
+        }
+        
+        private void GetCandelstickData_Click(object sender, RoutedEventArgs e)
+        {
+            
+            order = orderhandler.GetOrders();
+            texbox1.Text = order;
+
         }
     }
 }
