@@ -42,7 +42,7 @@ namespace BitmexbotWPF.Helpers
             var param = new Dictionary<string, string>();
             param["symbol"] = "XBTUSD";
             //param["filter"] = "{\"open\":true}";
-            //param["columns"] = "";
+            //param["columns"] = "" ;
             //param["count"] = 100.ToString();
             //param["start"] = 0.ToString();
             //param["reverse"] = false.ToString();
