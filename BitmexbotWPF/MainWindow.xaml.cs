@@ -13,6 +13,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using BitmexbotWPF.Helpers;
+using BitmexbotWPF.Objects;
 
 namespace BitmexbotWPF
 {
@@ -31,10 +32,25 @@ namespace BitmexbotWPF
         
         private void GetCandelstickData_Click(object sender, RoutedEventArgs e)
         {
-            
-            order = orderhandler.GetOrders();
-            texbox1.Text = order;
+            List<Candle> candleslist = new List<Candle>();
 
+            candleslist = orderhandler.GetCandelstickData();
+            foreach (var item in candleslist) {
+                texbox1.Text= item.close.ToString();
+                texbox1.Text = item.Timestamp.ToString();
+                listView.Items.Add(item.close.ToString());
+
+
+            }
+            
+
+        }
+
+        private void Gotochartbutton_Click(object sender, RoutedEventArgs e)
+        {
+           chart win2 = new chart();
+            win2.Show();
+           // this.Close();
         }
     }
 }

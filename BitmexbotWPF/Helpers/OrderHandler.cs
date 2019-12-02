@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using BitmexbotWPF.Objects;
+using Newtonsoft.Json;
 
 namespace BitmexbotWPF.Helpers
 {
@@ -11,14 +8,17 @@ namespace BitmexbotWPF.Helpers
     {
         BitMexApi bitmexapi = new BitMexApi();
 
-        //public List<OrderBookItem> GetOrderBook(string symbol, int depth)
-        //{
-        //    var param = new Dictionary<string, string>();
-        //    param["symbol"] = symbol;
-        //    param["depth"] = depth.ToString();
-        //    string res = Query("GET", "/orderBook", param);
-        //    return JsonSerializer.DeserializeFromString<List<OrderBookItem>>(res);
-        //}
+        public List<Orderbook> getorderbook(string symbol, int depth)
+        {
+            var param = new Dictionary<string, string>();
+            param["symbol"] = symbol;
+            param["depth"] = depth.ToString();   
+            string res = bitmexapi.Query("get", "/orderbook", param);
+            return JsonConvert.DeserializeObject<List<Orderbook>>(res);
+            
+
+
+        }
 
         public string GetOrders()
         {
@@ -33,22 +33,26 @@ namespace BitmexbotWPF.Helpers
             //param["startTime"] = "";
             //param["endTime"] = "";
             var response =  bitmexapi.Query("GET", "/order", param, true);
-            return JsonSerializer.DeserializeFromString<List<Orderbook>>(ressponse);
+            return response;
         }
 
-        public string GetCandelstickData()
+        public List<Candle> GetCandelstickData()
         {
 
             var param = new Dictionary<string, string>();
+            param["binSize"] = "5m";
             param["symbol"] = "XBTUSD";
             //param["filter"] = "{\"open\":true}";
             //param["columns"] = "" ;
-            //param["count"] = 100.ToString();
+            param["count"] = 100.ToString();
             //param["start"] = 0.ToString();
             //param["reverse"] = false.ToString();
-            //param["startTime"] = "";
+            param["startTime"] = "2019-10-01";
             //param["endTime"] = "";
-            return bitmexapi.Query("GET", "/order", param, true);
+
+            var response = bitmexapi.Query("GET", "/trade/bucketed", param, true);
+            return JsonConvert.DeserializeObject<List<Candle>>(response);
+
         }
 
 

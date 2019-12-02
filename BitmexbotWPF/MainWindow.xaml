@@ -7,8 +7,17 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
     <Grid>
-        <Button x:Name="GetCandelstickData" Content="GetCandelstickData" HorizontalAlignment="Left" Margin="195.2,98,0,0" VerticalAlignment="Top" Width="75" Click="GetCandelstickData_Click"/>
-        <TextBox x:Name="texbox1" HorizontalAlignment="Left" Height="122" Margin="148.8,233.2,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="263.4"/>
+        <Button x:Name="GetCandelstickData" Content="GetCandelstickData" HorizontalAlignment="Left" Margin="155.05,36.227,0,0" VerticalAlignment="Top" Width="75" Click="GetCandelstickData_Click" BorderBrush="#FFD50D0D" Background="#FF22B527"/>
+        <TextBox x:Name="texbox1" HorizontalAlignment="Left" Height="122" Margin="150.035,76.301,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="263.4"/>
+        <ListBox x:Name="listBox" HorizontalAlignment="Left" Height="130.885" Margin="155.05,218.886,0,0" VerticalAlignment="Top" Width="258.385"/>
+        <ListView x:Name="listView" HorizontalAlignment="Left" Height="108.516" Margin="478.485,89.785,0,0" VerticalAlignment="Top" Width="250.721">
+            <ListView.View>
+                <GridView>
+                    <GridViewColumn/>
+                </GridView>
+            </ListView.View>
+        </ListView>
+        <Button x:Name="Gotochartbutton" Content="Chart" HorizontalAlignment="Left" Margin="44.855,89.785,0,0" VerticalAlignment="Top" Width="75" Click="Gotochartbutton_Click"/>
 
     </Grid>
 </Window>
