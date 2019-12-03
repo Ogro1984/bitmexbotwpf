@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using BitmexbotWPF.Objects;
 using Newtonsoft.Json;
 
@@ -38,24 +39,46 @@ namespace BitmexbotWPF.Helpers
 
         public List<Candle> GetCandelstickData()
         {
-
+            var today= DateTime.UtcNow.AddHours(-8);
+            var todayyymmdd = today.ToString("yyyy-MM-dd");
+            string todayformatted =todayyymmdd + "T" + today.Hour.ToString().PadLeft(2, '0') + ":" + today.Minute.ToString().PadLeft(2, '0') + ":" + "00.000Z";
             var param = new Dictionary<string, string>();
             param["binSize"] = "5m";
             param["symbol"] = "XBTUSD";
             //param["filter"] = "{\"open\":true}";
             //param["columns"] = "" ;
-            param["count"] = 100.ToString();
+            param["count"] = 96.ToString();
             //param["start"] = 0.ToString();
-            //param["reverse"] = false.ToString();
-            param["startTime"] = "2019-10-01";
+            param["reverse"] = false.ToString();
+            
+            param["startTime"] = todayformatted;
             //param["endTime"] = "";
 
             var response = bitmexapi.Query("GET", "/trade/bucketed", param, true);
-            return JsonConvert.DeserializeObject<List<Candle>>(response);
+            var inverted= JsonConvert.DeserializeObject<List<Candle>>(response);
+            inverted.Reverse();
+            inverted=Unifycandels(inverted);
+            return inverted;
 
         }
 
+        public List<Candle> Unifycandels(List<Candle> candels) {
+            List<Candle> candle30min = new List<Candle>();
+            int counter = 0;
+            int j = 0;
+            foreach (var candle in candels) {
 
+                if (!(counter == 4)&&(counter == 0)) {
+                    candle30min[j].Open = candle.Open;
+                    counter++;
+                }
+                else if (!(counter == 4) && (!(counter == 0)))
+                {
+
+                } 
+
+        }
+            
 
 
         public string PostOrders()
