@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using BitmexbotWPF.Objects;
 using Newtonsoft.Json;
 
@@ -39,46 +40,83 @@ namespace BitmexbotWPF.Helpers
 
         public List<Candle> GetCandelstickData()
         {
-            var today= DateTime.UtcNow.AddHours(-8);
-            var todayyymmdd = today.ToString("yyyy-MM-dd");
-            string todayformatted =todayyymmdd + "T" + today.Hour.ToString().PadLeft(2, '0') + ":" + today.Minute.ToString().PadLeft(2, '0') + ":" + "00.000Z";
+            var today= DateTime.Now.AddHours(3);
+            //var todayyymmdd = today.ToString("yyyy-MM-dd");
+            var minutesparsed=0;
+            var hourparsed = 0;
+            if (today.Minute <= 30) { minutesparsed = 30; hourparsed = today.Hour - 1; } else { minutesparsed = 0; hourparsed = today.Hour; }
+            //string todayformatted =todayyymmdd + "T" + hourparsed.ToString().PadLeft(2, '0') + ":" + minutesparsed.ToString().PadLeft(2, '0') + ":" + "00.000Z";
+            DateTime exacthafhour= new DateTime(today.Year, today.Month, today.Day, hourparsed, minutesparsed, 0);
             var param = new Dictionary<string, string>();
-            param["binSize"] = "5m";
+            param["binSize"] = "1m";
             param["symbol"] = "XBTUSD";
             //param["filter"] = "{\"open\":true}";
             //param["columns"] = "" ;
-            param["count"] = 96.ToString();
+            param["count"] = 480.ToString();
             //param["start"] = 0.ToString();
-            param["reverse"] = false.ToString();
+            param["reverse"] = true.ToString();
             
-            param["startTime"] = todayformatted;
+            //param["startTime"] = todayformatted;
             //param["endTime"] = "";
 
             var response = bitmexapi.Query("GET", "/trade/bucketed", param, true);
-            var inverted= JsonConvert.DeserializeObject<List<Candle>>(response);
-            inverted.Reverse();
-            inverted=Unifycandels(inverted);
-            return inverted;
+
+            var rawresult= JsonConvert.DeserializeObject<List<Candle>>(response);
+            List<Candle> netresult = new List<Candle>();
+
+            foreach (var candle in rawresult) {
+                if (candle.Timestamp <= exacthafhour) { netresult.Add(candle); }
+
+            }
+
+            //var resultList = inverted.FindAll(x => x.Timestamp < exacthafhour).ToList();
+
+            netresult =Unifycandels(netresult);
+            //inverted.Reverse();
+
+            return netresult;
 
         }
 
-        public List<Candle> Unifycandels(List<Candle> candels) {
+        public List<Candle> Unifycandels(List<Candle> candels)
+        {
             List<Candle> candle30min = new List<Candle>();
             int counter = 0;
             int j = 0;
-            foreach (var candle in candels) {
+            foreach (var candle in candels)
+            {
 
-                if (!(counter == 4)&&(counter == 0)) {
-                    candle30min[j].Open = candle.Open;
-                    counter++;
-                }
-                else if (!(counter == 4) && (!(counter == 0)))
+                if ((counter > 0) && (counter < 29))
                 {
 
-                } 
+                    if (candle30min[j].High < candle.High) { candle30min[j].High = candle.High; }
+                    if (candle30min[j].Low > candle.Low) { candle30min[j].Low = candle.Low; }
+                    counter++;
+                }
+                else if (counter == 0)
+                {
+                    candle30min.Add(candle); 
+                   
+                    counter++;
 
+                }
+                else if (counter == 29)
+                {
+
+
+                    if (candle30min[j].High < candle.High) { candle30min[j].High = candle.High; }
+                    if (candle30min[j].Low > candle.Low) { candle30min[j].Low = candle.Low; }
+                    candle30min[j].close = candle.close;
+                    j++;
+                    counter = 0;
+
+                }
+
+
+
+            }
+            return candle30min;
         }
-            
 
 
         public string PostOrders()
