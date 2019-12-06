@@ -32,7 +32,7 @@ namespace BitmexbotWPF
         
         private void GetCandelstickData_Click(object sender, RoutedEventArgs e)
         {
-            List<Candle> candleslist = new List<Candle>();
+            List<Objects.Candle> candleslist = new List<Objects.Candle>();
 
             candleslist = orderhandler.GetCandelstickData();
             foreach (var item in candleslist) {

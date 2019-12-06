@@ -3,6 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using BitmexbotWPF.Objects;
 using Newtonsoft.Json;
+using Trady.Analysis.Extension;
+using Trady.Core;
+using Trady.Importer.Yahoo;
+using Trady.Analysis;
 
 namespace BitmexbotWPF.Helpers
 {
@@ -38,7 +42,7 @@ namespace BitmexbotWPF.Helpers
             return response;
         }
 
-        public List<Candle> GetCandelstickData()
+        public List<Objects.Candle> GetCandelstickData()
         {
             var today= DateTime.Now.AddHours(3);
             //var todayyymmdd = today.ToString("yyyy-MM-dd");
@@ -61,8 +65,8 @@ namespace BitmexbotWPF.Helpers
 
             var response = bitmexapi.Query("GET", "/trade/bucketed", param, true);
 
-            var rawresult= JsonConvert.DeserializeObject<List<Candle>>(response);
-            List<Candle> netresult = new List<Candle>();
+            var rawresult= JsonConvert.DeserializeObject<List<Objects.Candle>>(response);
+            List<Objects.Candle> netresult = new List<Objects.Candle>();
 
             foreach (var candle in rawresult) {
                 if (candle.Timestamp <= exacthafhour) { netresult.Add(candle); }
@@ -73,14 +77,14 @@ namespace BitmexbotWPF.Helpers
 
             netresult =Unifycandels(netresult);
             //inverted.Reverse();
-
+            var sma = Calcindicatorcci(netresult);
             return netresult;
 
         }
 
-        public List<Candle> Unifycandels(List<Candle> candels)
+        public List<Objects.Candle> Unifycandels(List<Objects.Candle> candels)
         {
-            List<Candle> candle30min = new List<Candle>();
+            List<Objects.Candle> candle30min = new List<Objects.Candle>();
             int counter = 0;
             int j = 0;
             foreach (var candle in candels)
@@ -116,6 +120,21 @@ namespace BitmexbotWPF.Helpers
 
             }
             return candle30min;
+        }
+
+        public List<decimal?> Calcindicatorcci(List<Objects.Candle> candels)
+        {
+
+            var closes = new List<decimal>();
+            foreach (var candle in candels) { closes.Add(candle.close); }
+
+            var smaTs = closes.Sma(3);
+            var cci = closes.Cci(3);
+            OhlcvExtension.Cci()
+            var sma = closes.Sma(30)[0];
+            List<decimal?> smareturned = new List<decimal?>();
+            foreach (var item in smaTs) { smareturned.Add(item); }
+            return smareturned;
         }
 
 
