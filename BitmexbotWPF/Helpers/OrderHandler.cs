@@ -45,18 +45,18 @@ namespace BitmexbotWPF.Helpers
         public List<Objects.Candle> GetCandelstickData()
         {
             var today= DateTime.Now.AddHours(3);
-            //var todayyymmdd = today.ToString("yyyy-MM-dd");
             var minutesparsed=0;
             var hourparsed = 0;
-            if (today.Minute <= 30) { minutesparsed = 30; hourparsed = today.Hour - 1; } else { minutesparsed = 0; hourparsed = today.Hour; }
-            //string todayformatted =todayyymmdd + "T" + hourparsed.ToString().PadLeft(2, '0') + ":" + minutesparsed.ToString().PadLeft(2, '0') + ":" + "00.000Z";
+            if (today.Minute >= 30) { minutesparsed = 30; hourparsed = today.Hour; } else { minutesparsed = 0; hourparsed = today.Hour;  }
             DateTime exacthafhour= new DateTime(today.Year, today.Month, today.Day, hourparsed, minutesparsed, 0);
+           // DateTime exacthafhour = new DateTime(today.Year, today.Month, today.Day, 22, 0, 0);
+
             var param = new Dictionary<string, string>();
-            param["binSize"] = "1m";
+            param["binSize"] = "5m";
             param["symbol"] = "XBTUSD";
             //param["filter"] = "{\"open\":true}";
             //param["columns"] = "" ;
-            param["count"] = 480.ToString();
+            param["count"] = 607.ToString();
             //param["start"] = 0.ToString();
             param["reverse"] = true.ToString();
             
@@ -67,19 +67,29 @@ namespace BitmexbotWPF.Helpers
 
             var rawresult= JsonConvert.DeserializeObject<List<Objects.Candle>>(response);
             List<Objects.Candle> netresult = new List<Objects.Candle>();
+            var counter = 0;
 
-            foreach (var candle in rawresult) {
-                if (candle.Timestamp <= exacthafhour) { netresult.Add(candle); }
-
+            foreach (var candle in rawresult)
+            {
+                Objects.Candle tempcandle = new Objects.Candle();
+                tempcandle = candle;
+                tempcandle.Timestamp=   tempcandle.Timestamp.AddMinutes(-5);
+         
+                if ((tempcandle.Timestamp < exacthafhour)&&(counter<=599)) {
+                   
+                                      
+                    netresult.Add(tempcandle); }
+                counter++;
             }
+            
+            
 
-            //var resultList = inverted.FindAll(x => x.Timestamp < exacthafhour).ToList();
+              netresult = Unifycandels(netresult);
 
-            netresult =Unifycandels(netresult);
-            //inverted.Reverse();
-            var sma = Calcindicatorcci(netresult);
+            //  var sma = Calcindicatorcci(netresult);
+      
+            netresult.Reverse();
             return netresult;
-
         }
 
         public List<Objects.Candle> Unifycandels(List<Objects.Candle> candels)
@@ -90,7 +100,7 @@ namespace BitmexbotWPF.Helpers
             foreach (var candle in candels)
             {
 
-                if ((counter > 0) && (counter < 29))
+                if ((counter > 0) && (counter < 5))
                 {
 
                     if (candle30min[j].High < candle.High) { candle30min[j].High = candle.High; }
@@ -99,18 +109,19 @@ namespace BitmexbotWPF.Helpers
                 }
                 else if (counter == 0)
                 {
-                    candle30min.Add(candle); 
-                   
+                    candle30min.Add(candle);
                     counter++;
 
                 }
-                else if (counter == 29)
+                else if (counter == 5)
                 {
 
 
                     if (candle30min[j].High < candle.High) { candle30min[j].High = candle.High; }
                     if (candle30min[j].Low > candle.Low) { candle30min[j].Low = candle.Low; }
-                    candle30min[j].close = candle.close;
+                    candle30min[j].Open = candle.Open;
+                    candle30min[j].Timestamp = candle.Timestamp;
+                    
                     j++;
                     counter = 0;
 
@@ -129,8 +140,8 @@ namespace BitmexbotWPF.Helpers
             foreach (var candle in candels) { closes.Add(candle.close); }
 
             var smaTs = closes.Sma(3);
-            var cci = closes.Cci(3);
-            OhlcvExtension.Cci()
+            //var cci = closes.Cci(3);
+           // OhlcvExtension.Cci()
             var sma = closes.Sma(30)[0];
             List<decimal?> smareturned = new List<decimal?>();
             foreach (var item in smaTs) { smareturned.Add(item); }

@@ -4,7 +4,7 @@ namespace BitmexbotWPF.Objects
 {
     public class Candle
     {
-            public DateTime? Timestamp { get; set; }
+            public DateTime Timestamp { get; set; }
             public string Symbol { get; set; }
             public decimal Open { get; set; }
             public decimal High { get; set; }
