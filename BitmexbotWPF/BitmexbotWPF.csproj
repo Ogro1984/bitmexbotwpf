@@ -290,6 +290,7 @@
       <DependentUpon>ChartCandle.xaml</DependentUpon>
     </Compile>
     <Compile Include="Helpers\BitMexApi.cs" />
+    <Compile Include="Helpers\Indicators.cs" />
     <Compile Include="Helpers\OrderHandler.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
@@ -298,6 +299,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Objects\Candle.cs" />
+    <Compile Include="Objects\Indicators_objects.cs" />
+    <Compile Include="Objects\IListspecialcandles.cs" />
+    <Compile Include="Objects\Specialcandles.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
